@@ -5,7 +5,7 @@ from gym import wrappers
 from time import time
 
 # 创建 Breakout 环境
-env = gym.make("Breakout-v4", render_mode="human", frameskip=15)
+env = gym.make("Breakout-v4", render_mode="rgb_array", frameskip=5)
 
 # 使用 Monitor 进行视频录制
 #env = wrappers.RecordVideo(env, './videos/' + str(int(time())) + '/', name_prefix='DaZhuanKuai', episode_trigger=lambda episode_id: True)
@@ -15,14 +15,16 @@ action_space_size = env.action_space.n
 q_table = np.random.randn(84, 84, action_space_size)  # 假设状态离散化为一个简单的 84x84 网格
 
 # 超参数
-num_episodes = 500
+num_episodes = 1000000
 max_steps = 1000
 learning_rate = 0.1
 discount_factor = 0.99
 epsilon = 1.0
 epsilon_decay = 0.995
 epsilon_min = 0.1
-
+best_reward = 0
+best_q_table = None
+avg_reward = 0
 # Q-learning 主循环
 for episode in range(num_episodes):
     state, _ = env.reset()
@@ -55,8 +57,19 @@ for episode in range(num_episodes):
 
     # 减小探索率
     epsilon = max(epsilon_min, epsilon * epsilon_decay)
+    
+    avg_reward += total_reward
+    
+    if total_reward >= best_reward:
+        best_reward = total_reward
+        best_q_table = q_table
+        np.save("best_q_table.npy", best_q_table)
+        print(f"Current max: {best_reward}")
 
-    print(f"Episode {episode+1}/{num_episodes}, Total Reward: {total_reward}")
+    if episode % 1000 == 999:
+        print(f"Episode {episode+1}/{num_episodes},Avg Total Reward: {avg_reward / 100}")
+        avg_reward = 0
 
 # 关闭环境并保存视频
 env.close()
+np.save("best_q_table.npy", best_q_table)
