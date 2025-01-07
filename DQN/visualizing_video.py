@@ -8,7 +8,7 @@ from utils import PreprocessState
 import random
 
 # 重玩游戏并展示视频
-def replay(env, model, num_episodes=1):
+def replay(env, model, num_episodes=100):
     preprocessor = PreprocessState()
 
     # 确保模型在正确的设备上
@@ -32,7 +32,7 @@ def replay(env, model, num_episodes=1):
             else: 
                 action = torch.argmax(q_values, dim=1).item()  # 选择最大Q值对应的动作
             # 执行动作并获得下一状态和奖励
-            print(action, end='')
+            #print(action, end='')
             next_state, reward, done, _, info = env.step(action)
 
             # 预处理下一个状态
@@ -49,11 +49,11 @@ def replay(env, model, num_episodes=1):
 
 # 运行重玩函数
 if __name__ == "__main__":
-    env = gym.make('Breakout-v4', render_mode='human')  # 创建环境
+    env = gym.make('Breakout-v4', render_mode='rgb_array')  # 创建环境
     device = torch.device("cpu")
     n_actions = env.action_space.n
-    model = DQNModel(n_actions)  # 假设你已经有了DQN模型
-    model_path = './checkpoints/best_model_v7.pth'  # 训练好的模型路径
+    model = DQNModel(n_actions)  
+    model_path = './checkpoints/best_model_v2.pth'  # 训练好的模型路径
     model.load_state_dict(torch.load(model_path))  # 加载权重
 
     # 重玩游戏并展示视频
