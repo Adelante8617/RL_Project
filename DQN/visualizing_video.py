@@ -53,7 +53,7 @@ if __name__ == "__main__":
     device = torch.device("cpu")
     n_actions = env.action_space.n
     model = DQNModel(n_actions)  
-    model_path = './checkpoints/best_model_v2.pth'  # 训练好的模型路径
+    model_path = './checkpoints/newest_model.pth'  # 训练好的模型路径
     model.load_state_dict(torch.load(model_path))  # 加载权重
 
     # 重玩游戏并展示视频

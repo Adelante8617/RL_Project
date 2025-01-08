@@ -77,7 +77,7 @@ class TrainingLogger:
         self.start_time = time.time()
         self.logger.info('Training started.')
 
-    def log(self, epoch, metric_value, loss=None, env=None, episode=None):
+    def log(self, epoch, metric_value, loss=None, env=None, episode=None, record_newest=False):
         """
         记录训练过程中的日志信息，并保存表现最好的模型和视频
         :param epoch: 当前训练轮次
@@ -85,6 +85,7 @@ class TrainingLogger:
         :param loss: 当前的loss值（如果有的话）
         :param env: 游戏环境，用于保存视频
         :param episode: 当前回合，用于保存最好的视频
+        :param record_newest: 用于保存当前回合的权重，默认为False
         """
         
         # 每log_interval轮记录一次
@@ -109,6 +110,9 @@ class TrainingLogger:
                 self.logger.info(f"One more best score: {self.best_score}, saving model and video.")
                 torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'best_model_v{self.version_counter}.pth'))
                 
+            if record_newest:
+                torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'newest_model.pth'))
+                
 
     def end_training(self):
         """
@@ -129,9 +133,6 @@ class TrainingLogger:
         """
         frames = []
         state = env.reset()
-
-        # 录制视频
-        # -------------------
         
         done = True
         while not done:
