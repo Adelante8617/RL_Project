@@ -3,12 +3,12 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
-from DQN import DQNModel
+from DQN_using_resnet import DQNAgentWithPretrained, DQNModelWithPretrained
 from utils import PreprocessState
 import random
 
 # 重玩游戏并展示视频
-def replay(env, model, num_episodes=100):
+def replay(env, model, num_episodes=1):
     preprocessor = PreprocessState()
 
     # 确保模型在正确的设备上
@@ -49,11 +49,11 @@ def replay(env, model, num_episodes=100):
 
 # 运行重玩函数
 if __name__ == "__main__":
-    env = gym.make('Breakout-v4', render_mode='rgb_array')  # 创建环境
+    env = gym.make('Breakout-v4', render_mode='human')  # 创建环境
     device = torch.device("cpu")
     n_actions = env.action_space.n
-    model = DQNModel(n_actions)  
-    model_path = './checkpoints/newest_model.pth'  # 训练好的模型路径
+    model = DQNModelWithPretrained(n_actions)  
+    model_path = './checkpoints/best_model_v2.pth'  # 训练好的模型路径
     model.load_state_dict(torch.load(model_path))  # 加载权重
 
     # 重玩游戏并展示视频
