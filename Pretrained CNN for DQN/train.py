@@ -21,7 +21,7 @@ warnings.filterwarnings("ignore")
 
 device = torch.device("cuda")
 
-def train(env, model, target_model, logger, num_episodes=100):
+def train(env, model, target_model, logger, num_episodes=24):
     agent = DQNAgentWithPretrained(env, model, target_model, optimizer)
     preprocessor = PreprocessState()
     

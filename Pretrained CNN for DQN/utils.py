@@ -38,6 +38,11 @@ class PreprocessState:
         return processed_image  # 返回处理后的图像
 
 
+import os
+import time
+import logging
+import torch
+from datetime import datetime
 
 class TrainingLogger:
     def __init__(self, log_file, model, video_dir='videos', checkpoint_dir='checkpoints', log_interval=1, metric='score'):
@@ -104,23 +109,29 @@ class TrainingLogger:
                 self.logger.info(f"Epoch {epoch}: loss = {loss}")
             else:
                 self.logger.warning(f"Invalid metric or missing loss for epoch {epoch}.")
-
+            
             # 如果当前得分超过历史最好的得分，保存视频和模型权重
             if metric_value > self.best_score:
                 self.best_score = metric_value
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # 获取当前时间戳
                 self.logger.info(f"New best score: {self.best_score}, saving model.")
                 
-                # 保存表现最好的模型权重
-                torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'best_model_v{self.version_counter}.pth'))
-                self.version_counter += 1
-                # 保存表现最好的视频
+                # 保存表现最好的模型权重，文件名中添加得分和时间戳
+                checkpoint_filename = f'best_model_scoring:{self.best_score}_at_{timestamp}.pth'
+                #torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, checkpoint_filename))
+
+                # 保存表现最好的视频（如果需要）
+                # 此处假设有一个函数用于保存视频
+                # self.save_video(env, episode, timestamp)
+
             elif metric_value == self.best_score:
                 self.logger.info(f"One more best score: {self.best_score}, saving model.")
-                torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'best_model_v{self.version_counter}.pth'))
-                
-            if record_newest:
-                torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'newest_model.pth'))
-                
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')  # 获取当前时间戳
+                checkpoint_filename = f'best_model_scoring:{self.best_score}_at_{timestamp}.pth'
+                #torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, checkpoint_filename))
+            
+            if record_newest or epoch == 20:
+                torch.save(self.model.state_dict(), os.path.join(self.checkpoint_dir, f'latest_model.pth'))
 
     def end_training(self):
         """
@@ -132,6 +143,7 @@ class TrainingLogger:
         else:
             self.logger.warning('Training was not started correctly.')
 
+            
     def save_best_video(self, env, episode):
         return ## 先不管
         """

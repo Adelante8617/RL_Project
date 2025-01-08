@@ -6,6 +6,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 from collections import deque
 from torch import nn
+import os
 
 device = torch.device("cuda")
 
@@ -42,7 +43,7 @@ class DQNModelWithPretrained(nn.Module):
 
 
 class DQNAgentWithPretrained:
-    def __init__(self, env, model, target_model, optimizer, gamma=0.99, epsilon=1.0, epsilon_decay=0.9999, min_epsilon=0.02):
+    def __init__(self, env, model, target_model, optimizer, model_path="./checkpoints/latest_model.pth", gamma=0.99, epsilon=1.0, epsilon_decay=0.9999, min_epsilon=0.02):
         self.env = env
         self.model = model
         self.target_model = target_model
@@ -55,6 +56,19 @@ class DQNAgentWithPretrained:
         self.batch_size = 64
         self.best_model = None
         self.best_score = 0
+        self.model_path = model_path  # 类成员变量
+
+        # 加载模型权重（如果存在）
+        self.load_model_weights()
+
+    def load_model_weights(self):
+        """加载已保存的模型权重"""
+        if os.path.exists(self.model_path):
+            checkpoint = torch.load(self.model_path)
+            self.model.load_state_dict(checkpoint)  
+            print("Load success")
+        else:
+            print("未找到已保存的模型权重，开始从头训练")
 
     def select_action(self, state):
         if random.random() < self.epsilon:
