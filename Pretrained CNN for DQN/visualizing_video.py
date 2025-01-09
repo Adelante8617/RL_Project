@@ -8,7 +8,7 @@ from utils import PreprocessState
 import random
 
 # 重玩游戏并展示视频
-def replay(env, model, num_episodes=100):
+def replay(env, model, num_episodes=10):
     preprocessor = PreprocessState()
 
     # 确保模型在正确的设备上
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     device = torch.device("cpu")
     n_actions = env.action_space.n
     model = DQNModelWithPretrained(n_actions)  
-    model_path = './checkpoints/best_model_v3.pth'  # 训练好的模型路径
+    model_path = './checkpoints/latest_model.pth'  # 训练好的模型路径
     model.load_state_dict(torch.load(model_path))  # 加载权重
 
     # 重玩游戏并展示视频
