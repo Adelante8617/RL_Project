@@ -1,7 +1,0 @@
-@echo off
-:loop
-    echo Starting training...
-    python train.py
-
-    REM 返回到循环开始位置，重新执行
-    goto loop

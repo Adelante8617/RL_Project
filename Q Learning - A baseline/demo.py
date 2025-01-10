@@ -15,7 +15,7 @@ action_space_size = env.action_space.n
 q_table = np.random.randn(84, 84, action_space_size)  # 假设状态离散化为一个简单的 84x84 网格
 
 # 超参数
-num_episodes = 1000000
+num_episodes = 100000
 max_steps = 1000
 learning_rate = 0.1
 discount_factor = 0.99
@@ -25,6 +25,9 @@ epsilon_min = 0.1
 best_reward = 0
 best_q_table = None
 avg_reward = 0
+
+
+all_scores = []
 # Q-learning 主循环
 for episode in range(num_episodes):
     state, _ = env.reset()
@@ -60,6 +63,8 @@ for episode in range(num_episodes):
     
     avg_reward += total_reward
     
+    all_scores.append(total_reward)
+    
     if total_reward >= best_reward:
         best_reward = total_reward
         best_q_table = q_table
@@ -73,3 +78,8 @@ for episode in range(num_episodes):
 # 关闭环境并保存视频
 env.close()
 np.save("best_q_table.npy", best_q_table)
+
+# 保存到文本文件
+with open('data.txt', 'w') as f:
+    for item in all_scores:
+        f.write(f"{item}\n")
