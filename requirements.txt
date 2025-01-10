@@ -1,0 +1,8 @@
+gym==0.26.2
+matplotlib==3.5.1
+matplotlib==3.6.1
+numpy==1.25.2
+torch==2.1.2+cu118
+torch==2.5.1
+torchvision==0.16.2+cu118
+torchvision==0.20.1
